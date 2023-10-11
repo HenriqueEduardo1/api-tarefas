@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tarefas.api.dtos.TaskRecordDto;
 import com.tarefas.api.models.TaskModel;
 import com.tarefas.api.repositories.TaskRepository;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/task")
@@ -27,18 +30,20 @@ public class TaskController {
     @Autowired
     private TaskRepository taskRepository;
     
-    @PostMapping("/")
-    public ResponseEntity<TaskModel> create(@RequestBody TaskModel taskModel){
+    @PostMapping()
+    public ResponseEntity<TaskModel> createTask(@RequestBody @Valid TaskRecordDto taskRecordDto){
+        var taskModel = new TaskModel();
+        BeanUtils.copyProperties(taskRecordDto, taskModel);
         return ResponseEntity.ok(this.taskRepository.save(taskModel));
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<TaskModel>> getAll(){
+    @GetMapping()
+    public ResponseEntity<List<TaskModel>> getAllTask(){
         return ResponseEntity.ok(this.taskRepository.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable(value="id") UUID id){
+    public ResponseEntity<Object> getTaskById(@PathVariable(value="id") UUID id){
         Optional<TaskModel> task = taskRepository.findById(id);
 
         if(task.isEmpty()){
@@ -49,21 +54,21 @@ public class TaskController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable(value="id") UUID id, @RequestBody TaskModel taskModel){
+    public ResponseEntity<Object> updateTask(@PathVariable(value="id") UUID id, @RequestBody @Valid TaskRecordDto taskRecordDto){
         Optional<TaskModel> task = taskRepository.findById(id);
 
         if(task.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
         }
 
-        var taskU = task.get();
-        BeanUtils.copyProperties(taskModel, taskU);
+        var taskModel = task.get();
+        BeanUtils.copyProperties(taskRecordDto, taskModel);
 
-        return ResponseEntity.ok(this.taskRepository.save(taskU));
+        return ResponseEntity.ok(this.taskRepository.save(taskModel));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable(value="id") UUID id){
+    public ResponseEntity<Object> deleteTask(@PathVariable(value="id") UUID id){
         Optional<TaskModel> task = taskRepository.findById(id);
 
         if(task.isEmpty()){

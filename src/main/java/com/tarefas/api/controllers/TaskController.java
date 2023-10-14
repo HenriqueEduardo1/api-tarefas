@@ -79,6 +79,6 @@ public class TaskController {
 
         taskRepository.delete(task.get());
 
-        return ResponseEntity.status(HttpStatus.OK).body("Task deleted successfully");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

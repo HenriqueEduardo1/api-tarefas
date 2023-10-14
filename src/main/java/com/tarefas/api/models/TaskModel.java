@@ -21,6 +21,7 @@ public class TaskModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idTask;
     private String title;
+    private String situation;
     private String description;
     private String responsible;
     private String priority;
